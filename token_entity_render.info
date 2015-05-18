@@ -1,0 +1,5 @@
+name = Token Entity Render
+description = Provides tokens that render full entities using view mode specified
+core = 7.x
+dependencies[] = token
+dependencies[] = entity
