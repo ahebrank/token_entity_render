@@ -1,5 +1,6 @@
 name: Token Entity Render
+type: module
 description: Provides tokens that render full entities using view mode specified
 core: 8.x
 dependencies:
-  - token
+  - drupal:token
