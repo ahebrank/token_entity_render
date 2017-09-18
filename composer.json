@@ -3,6 +3,6 @@
     "type": "drupal-module",
     "description": "Provides tokens that render full entities using view mode specified",
     "require": {
-        "soundasleep/html2text": "~0.5"
+        "robquistnl/simplehtmltotext": "~1"
     }
  }

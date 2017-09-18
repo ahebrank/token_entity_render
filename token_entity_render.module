@@ -5,7 +5,9 @@
  */
 
 use Drupal\Core\Render\BubbleableMetadata;
-use Html2Text\Html2Text;
+use Drupal\Core\Entity\ContentEntityType;
+use SimpleHtmlToText\Parser;
+
 
 /**
  * Implements hook_token_info().
@@ -13,14 +15,15 @@ use Html2Text\Html2Text;
 function token_entity_render_token_info() {
   $tokens = [];
   $definitions = \Drupal::entityTypeManager()->getDefinitions();
-  foreach ($definitions as $definition) {
+  $token_mapper = \Drupal::service('token.entity_mapper');
+
+  foreach ($definitions as $entity_id => $definition) {
     if ($definition instanceof ContentEntityType) {
-      $entity_id = $definition->id();
       $label = $definition->getLabel();
-      $token_type = \Drupal::service('token.entity_mapper')::getTokenTypeForEntityType($entity_id);
-      $tokens[$definition] = [
+      $token_type = $token_mapper->getTokenTypeForEntityType($entity_id);
+      $tokens[$token_type] = [
         'render' => [
-          'name' => t('Rendered @type', ['@type' => $entity_id]),
+          'name' => t('Rendered @type', ['@type' => $label]),
           'description' => t('Renders a @type using the pattern [@label:render:?], where ? stands for the view mode name.',
             [
               '@label' => $token_type,
@@ -71,7 +74,8 @@ function token_entity_render_tokens($type, $tokens, array $data = [], array $opt
 
       if ($parts[0] == 'render_text') {
         // convert html to txt
-        $output = Html2Text::convert($output);
+        $parser = new Parser();
+        $output = $parser->parseString($output);
       }
 
       $replacements[$original] = $output;
