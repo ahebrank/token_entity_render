@@ -11,8 +11,8 @@ use Html2Text\Html2Text;
  * Implements hook_token_info().
  */
 function token_entity_render_token_info() {
-  $tokens = array();
-  $entities = entity_get_info();
+  $tokens = [];
+  $entities = \Drupal::entityManager()->getDefinitions‌​();
   foreach ($entities as $entity) {
     $tokens[$entity['token type']] = array(
       'render' => array(
@@ -52,7 +52,6 @@ function token_entity_render_tokens($type, $tokens, array $data = [], array $opt
 
       $entity = $data['entity'];
       $entity_type = $entity->getEntityTypeId();
-      $render_controller = \Drupal::entityManager()->getViewBuilder($entity_type);
 
       if (isset($parts[1])) {
         $available_view_modes = Drupal::entityQuery('entity_view_mode')
@@ -63,14 +62,16 @@ function token_entity_render_tokens($type, $tokens, array $data = [], array $opt
         }
       }
 
+      $render_controller = \Drupal::entityManager()->getViewBuilder($entity_type);
       $rendered_entity = $render_controller->view($entity, $view_mode, $langcode);
+      $output = \Drupal::service('renderer')->render($rendered_entity);
 
       if ($parts[0] == 'render_text') {
         // convert html to txt
-        $rendered_entity = Html2Text::convert($rendered_entity);
+        $output = Html2Text::convert($output);
       }
 
-      $replacements[$original] = drupal_render($rendered_entity);
+      $replacements[$original] = $output;
     }
   }
 
