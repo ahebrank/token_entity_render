@@ -1,8 +1,5 @@
 {
     "name": "ahebrank/token_entity_render",
     "type": "drupal-module",
-    "description": "Provides tokens that render full entities using view mode specified",
-    "require": {
-        "robquistnl/simplehtmltotext": "~1"
-    }
+    "description": "Provides tokens that render full entities using view mode specified"
  }

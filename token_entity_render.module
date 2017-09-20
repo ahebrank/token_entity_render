@@ -73,9 +73,19 @@ function token_entity_render_tokens($type, $tokens, array $data = [], array $opt
       $output = \Drupal::service('renderer')->render($rendered_entity);
 
       if ($parts[0] == 'render_text') {
-        // convert html to txt
-        $parser = new Parser();
-        $output = $parser->parseString($output);
+        $output = [];
+        $field_map = \Drupal::service('entity_field.manager')->getFieldMap();
+        $entity_fields = $field_map[$entity_type];
+        foreach ($rendered_entity as $f => $element) {
+          if (isset($entity_fields[$f])) {
+            $field_label = $entity->$f->getFieldDefinition()->getLabel();
+            $field_value = $entity->$f->value;
+            if (!is_null($field_value)) {
+              $output[] = $field_label . ': ' . strip_tags($field_value);
+            }
+          }
+        }
+        $output = implode("\n\n", $output);
       }
 
       $replacements[$original] = $output;
